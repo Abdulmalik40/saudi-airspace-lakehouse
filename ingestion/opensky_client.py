@@ -1,0 +1,3 @@
+def fetch_states() -> dict:
+    """Fetch current aircraft states over the MENA bbox from OpenSky."""
+    ...
