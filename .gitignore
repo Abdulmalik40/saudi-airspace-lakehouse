@@ -1,5 +1,53 @@
+# Environment and secrets
+.env
+.env.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data layers — never commit data
+data/
+!data/.gitkeep
+
+# Spark
+spark-warehouse/
+metastore_db/
+derby.log
+
+# Airflow runtime artifacts
 logs/
 config/
 plugins/
-data/
-.env
+airflow.cfg
+airflow.db
+webserver_config.py
+standalone_admin_password.txt
+
+# Docker volumes (if ever bind-mounted)
+postgres-data/
+grafana-data/
+
+# IDE and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# OS
+Thumbs.db
