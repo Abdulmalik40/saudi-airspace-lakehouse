@@ -50,4 +50,4 @@ grafana-data/
 .DS_Store
 
 # OS
-Thumbs.db
+Thumbs.dbdags/test_fetch.py
