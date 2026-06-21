@@ -102,6 +102,7 @@ services:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
+      
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
@@ -110,6 +111,24 @@ services:
       retries: 5
       start_period: 5s
     restart: always
+
+  spark:
+    build:
+      context: .
+      dockerfile: docker/spark.Dockerfile
+    container_name: airspace-spark
+    volumes:
+      - ./spark_jobs:/opt/airflow/spark_jobs
+      - ./data:/opt/airflow/data
+      - ./ingestion:/opt/airflow/ingestion
+    environment:
+      PYTHONPATH: /opt/airflow
+      LAKE_ROOT: /opt/airflow/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    
 
 # redis:
 #   # Redis is limited to 7.2-bookworm due to licencing change
