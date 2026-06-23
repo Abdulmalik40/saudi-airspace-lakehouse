@@ -12,16 +12,16 @@ RUN apt-get update && \
 ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 
 # Install PySpark.
-RUN pip install --no-cache-dir pyspark==4.1.2
+RUN pip install --no-cache-dir pyspark==4.0.0 delta-spark==4.0.0
 
 # Download Delta Lake and Postgres JDBC JARs.
 # These live in a known location that session.py will reference.
 ENV SPARK_EXTRA_JARS=/opt/spark-extra-jars
 RUN mkdir -p ${SPARK_EXTRA_JARS} && \
     curl -L -o ${SPARK_EXTRA_JARS}/delta-spark.jar \
-        https://repo1.maven.org/maven2/io/delta/delta-spark_2.13/4.1.0/delta-spark_2.13-4.1.0.jar && \
+        https://repo1.maven.org/maven2/io/delta/delta-spark_2.13/4.0.0/delta-spark_2.13-4.0.0.jar && \
     curl -L -o ${SPARK_EXTRA_JARS}/delta-storage.jar \
-        https://repo1.maven.org/maven2/io/delta/delta-storage/4.1.0/delta-storage-4.1.0.jar && \
+        https://repo1.maven.org/maven2/io/delta/delta-storage/4.0.0/delta-storage-4.0.0.jar && \
     curl -L -o ${SPARK_EXTRA_JARS}/postgresql.jar \
         https://repo1.maven.org/maven2/org/postgresql/postgresql/42.7.4/postgresql-42.7.4.jar
 
