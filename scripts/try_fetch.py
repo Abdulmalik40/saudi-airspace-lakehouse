@@ -13,3 +13,5 @@ if states is None:
 else:
     print(f"Aircraft count: {len(states)}")
     print(f"First aircraft (raw state vector): {states[0]}")
+    
+    
