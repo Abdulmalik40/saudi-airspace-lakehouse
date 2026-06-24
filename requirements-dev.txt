@@ -1,2 +1,5 @@
 apache-airflow==3.2.2
-pyspark==4.1.2
+apache-airflow-providers-docker
+docker
+pyspark==4.0.0
+delta-spark==4.0.0

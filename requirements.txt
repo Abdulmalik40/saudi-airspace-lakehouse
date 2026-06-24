@@ -1,2 +1,3 @@
 requests
 tenacity
+apache-airflow-providers-docker
