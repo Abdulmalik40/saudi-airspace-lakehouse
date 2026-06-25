@@ -4,7 +4,7 @@ from pyspark.sql.types import StructType, StructField, StringType, LongType, Arr
 from pyspark.sql.functions import col, current_timestamp, explode, expr
 from delta.tables import DeltaTable
 from spark_jobs.common.session import get_spark
-
+from spark_jobs.common.schemas import BRONZE_WRAPPER_SCHEMA
 LAKE_ROOT = os.environ["LAKE_ROOT"]
 
 spark = get_spark("bronze-to-silver")
@@ -13,12 +13,7 @@ bronze_path = f"{LAKE_ROOT}/bronze"
 silver_path = f"{LAKE_ROOT}/silver/state_vectors"
 checkpoint_path = f"{LAKE_ROOT}/checkpoints/bronze_to_silver"
 
-# OpenSky returns states as an array of positional arrays with mixed types.
-# Read each inner array as array<string>; project and cast by index in process_batch.
-BRONZE_WRAPPER_SCHEMA = StructType([
-    StructField("time", LongType(), True),
-    StructField("states", ArrayType(ArrayType(StringType())), True),
-])
+
 
 bronze_df = (
     spark.readStream
@@ -30,10 +25,9 @@ bronze_df = (
 
 
 def process_batch(batch_df: DataFrame, batch_id: int):
-    """Explode positional state arrays, project by index, cast types, MERGE."""
+    """Explode positional state arrays, project by index, cast types, MERGE"""
 
-    # Each row in batch_df = one file. Explode states → one row per aircraft.
-    # 's' is now an array<string> of 17–18 elements.
+   
     exploded = batch_df.select(explode(col("states")).alias("s"))
 
     # Project by positional index and cast to real types.
