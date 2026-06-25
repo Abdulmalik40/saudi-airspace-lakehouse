@@ -1,7 +1,8 @@
 # Environment and secrets
 .env
 .env.local
-*.env
+.env.*
+!.env.example
 
 # Python
 __pycache__/
@@ -29,6 +30,10 @@ spark-warehouse/
 metastore_db/
 derby.log
 
+# Delta Lake checkpoints (if ever written outside data/)
+_delta_log/
+checkpoints/
+
 # Airflow runtime artifacts
 logs/
 config/
@@ -42,12 +47,23 @@ standalone_admin_password.txt
 postgres-data/
 grafana-data/
 
+# Local pip/uv caches
+.pip-cache/
+.uv-cache/
+
+# Coverage and test artifacts
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+.tox/
+
 # IDE and editor
 .vscode/
 .idea/
 *.swp
 *.swo
-.DS_Store
 
 # OS
-
+.DS_Store
+Thumbs.db
