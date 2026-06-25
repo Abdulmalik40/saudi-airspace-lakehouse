@@ -24,7 +24,7 @@ Out of scope:
 - Worldwide coverage. The OpenSky free quota and the regional focus make this
   a deliberate choice.
 
-
+Status: In progress 
 
 
 
