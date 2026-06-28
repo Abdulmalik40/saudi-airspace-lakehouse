@@ -11,7 +11,29 @@ from airflow.sdk import get_current_context
 
 logger = logging.getLogger(__name__)
 
+
 HOST_PROJECT_DIR = os.environ["HOST_PROJECT_DIR"]
+
+SPARK_MOUNTS = [
+    Mount(
+        source=f"{HOST_PROJECT_DIR}/spark_jobs",
+        target="/opt/airflow/spark_jobs",
+        type="bind",
+        read_only=True,
+    ),
+    Mount(
+        source=f"{HOST_PROJECT_DIR}/data",
+        target="/opt/airflow/data",
+        type="bind",
+        read_only=False,
+    ),
+    Mount(
+        source=f"{HOST_PROJECT_DIR}/ingestion",
+        target="/opt/airflow/ingestion",
+        type="bind",
+        read_only=True,
+    ),
+]
 
 LAKE_ROOT = os.environ["LAKE_ROOT"]
 
@@ -48,31 +70,31 @@ def flights_pipeline():
             "PYTHONPATH": "/opt/airflow",
             "LAKE_ROOT": "/opt/airflow/data",
         },
-        mounts=[
-            Mount(
-                source=f"{HOST_PROJECT_DIR}/spark_jobs",
-                target="/opt/airflow/spark_jobs",
-                type="bind",
-                read_only=True,
-            ),
-            Mount(
-                source=f"{HOST_PROJECT_DIR}/data",
-                target="/opt/airflow/data",
-                type="bind",
-                read_only=False,
-            ),
-            Mount(
-                source=f"{HOST_PROJECT_DIR}/ingestion",
-                target="/opt/airflow/ingestion",
-                type="bind",
-                read_only=True,
-            ),
-        ],
+        mounts=
+        SPARK_MOUNTS
+        
     )
+    
+    silver_to_gold = DockerOperator(
+    task_id="silver_to_gold",
+    image="airspace-spark",
+    container_name="airspace-spark-gold-{{ ts_nodash }}",
+    api_version="auto",
+    auto_remove="success",
+    command="python -m spark_jobs.silver_to_gold",
+    docker_url="unix://var/run/docker.sock",
+    network_mode="bridge",
+    mount_tmp_dir=False,
+    environment={
+        "PYTHONPATH": "/opt/airflow",
+        "LAKE_ROOT": "/opt/airflow/data",
+    },
+    mounts=SPARK_MOUNTS
+)
     
     # Define dependencies
     ingest = ingest_states()
-    ingest >> bronze_to_silver
+    ingest >> bronze_to_silver >> silver_to_gold
 
 
 flights_pipeline()
