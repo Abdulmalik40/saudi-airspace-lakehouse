@@ -64,7 +64,7 @@ def flights_pipeline():
         auto_remove="success",
         command="python -m spark_jobs.bronze_to_silver",
         docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
+        network_mode="container:airspace-spark",
         mount_tmp_dir=False,
         environment={
             "PYTHONPATH": "/opt/airflow",
@@ -83,7 +83,7 @@ def flights_pipeline():
     auto_remove="success",
     command="python -m spark_jobs.silver_to_gold",
     docker_url="unix://var/run/docker.sock",
-    network_mode="bridge",
+    network_mode="container:airspace-spark",
     mount_tmp_dir=False,
     environment={
         "PYTHONPATH": "/opt/airflow",
@@ -91,10 +91,26 @@ def flights_pipeline():
     },
     mounts=SPARK_MOUNTS
 )
+    load_postgres = DockerOperator(
+    task_id="load_postgres",
+    image="airspace-spark",
+    container_name="airspace-spark-postgres-{{ ts_nodash }}",
+    api_version="auto",
+    auto_remove="success",
+    command="python -m spark_jobs.load_postgres",
+    docker_url="unix://var/run/docker.sock",
+    network_mode="container:airspace-spark",
+    mount_tmp_dir=False,
+    environment={
+        "PYTHONPATH": "/opt/airflow",
+        "LAKE_ROOT": "/opt/airflow/data",
+    },
+    mounts=SPARK_MOUNTS,
+)
     
-    # Define dependencies
+
     ingest = ingest_states()
-    ingest >> bronze_to_silver >> silver_to_gold
+    ingest >> bronze_to_silver >> silver_to_gold >> load_postgres
 
 
 flights_pipeline()
